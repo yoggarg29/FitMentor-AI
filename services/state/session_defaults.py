@@ -8,7 +8,7 @@ def initial_session_defaults():
         "reps_per_set": 0,
         "sets_completed": 0,
         "current_set_reps": 0,
-        "workout_complete": False,
+        "workout_completed": False,
         "last_notified_sets_completed": 0,
         "last_notified_workout_complete": False,
         "last_saved_sets_completed": 0,
@@ -35,8 +35,11 @@ def initial_session_defaults():
         "shoulder_status": "N/A",
         "swing_status": "N/A",
         "extension_status": "N/A",
-        "back_arch_status": "N/A",
-        "balance_status": "N/A",
+        "symmetry_status": "N/A",
+
+        "movement": "STABLE",
+        "torso_stability": "N/A",
+        "active_leg": "NONE",
     }
     for key,value in defaults.items():
         if key not in st.session_state:

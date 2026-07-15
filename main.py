@@ -15,6 +15,7 @@ from groq import Groq
 from services.coaching.llm import LLMCoach
 from services.coaching.tts import TextToSpeech
 from services.coaching.voice_pipeline import VoicePipeline,autoplay_audio
+from services.config.camera_guidance import CAMERA_GUIDANCE
 
 def main():
     st.set_page_config(
@@ -62,6 +63,8 @@ def main():
 
         if not workout_started:
             plan_exercise=st.selectbox("Exercise",options=EXERCISE_OPTIONS,key="plan_exercise",)
+
+           
 
             plan_sets=st.number_input("Sets",min_value=1,max_value=50,key="plan_sets",step=1)
 
@@ -150,21 +153,46 @@ def main():
 
             elif exercise == "Biceps Curls (Dumbbell)":
                 st.subheader("Curl Metrics")
-                st.metric("Elbow Angle", f"{st.session_state.elbow_angle}°")
-                st.metric("Shoulder Stability", st.session_state.shoulder_status)
-                st.metric("Swing Detection", st.session_state.swing_status)
+
+                st.metric(
+                    "Elbow Angle",
+                    f"{st.session_state.elbow_angle}°",
+                )
+
+                st.metric(
+                    "Elbow Position",
+                    st.session_state.shoulder_status,
+                )
+
+                st.metric(
+                    "Swing Detection",
+                    st.session_state.swing_status,
+                )
 
             elif exercise == "Shoulder Press":
                 st.subheader("Shoulder Press Metrics")
                 st.metric("Elbow Angle", f"{st.session_state.elbow_angle}°")
                 st.metric("Arm Extension", st.session_state.extension_status)
-                st.metric("Back Arch", st.session_state.back_arch_status)
+                st.metric("Arm Symmetry", st.session_state.symmetry_status)
+                st.metric("Movement", st.session_state.movement)
 
             elif exercise == "Lunges":
                 st.subheader("Lunge Metrics")
-                st.metric("Front Knee Angle", f"{st.session_state.front_knee_angle}°")
-                st.metric("Torso Angle", f"{st.session_state.torso_angle}°")
-                st.metric("Balance Status", st.session_state.balance_status)
+
+                st.metric(
+                    "Tracked Knee Angle",
+                    f"{st.session_state.front_knee_angle}°",
+                )
+
+                st.metric(
+                    "Torso Stability",
+                    st.session_state.torso_stability,
+                )
+
+                st.metric(
+                    "Movement",
+                    st.session_state.movement,
+                )
 
     st.title("🏋️ FitMentor AI")
     st.markdown("#### Real-time Pose Detection • AI Voice Coaching • Workout Analytics")
@@ -205,6 +233,18 @@ def main():
             )
         
     else:
+        st.title(f"🏋️ {exercise}")
+        exercise = st.session_state.get("exercise_type")
+        guide = CAMERA_GUIDANCE.get(exercise)
+
+        if guide:
+            with st.container(border=True):
+                st.markdown("#### 📹 Before You Start")
+                st.caption(f"📍 Position: {guide['position']}")
+
+                for tip in guide["tips"]:
+                    st.markdown(f"✅ {tip}")
+
         context=webrtc_streamer(
             key="exercise_analysis",
             mode=WebRtcMode.SENDRECV,

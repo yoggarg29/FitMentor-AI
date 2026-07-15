@@ -129,7 +129,7 @@ class VideoProcessorClass(VideoProcessorBase):
 
         cv2.putText(
             img,
-            f"DEPTH: {metrics['depth_status']}",
+           f"DEPTH: {metrics.get('depth_status', 'N/A')}",
             (20, h - 20),
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
@@ -142,7 +142,10 @@ class VideoProcessorClass(VideoProcessorBase):
 
         cv2.putText(
             img,
-            f"BODY: {metrics['body_alignment']} | HIP: {metrics['hip_status']}",
+            (
+                f"BODY: {metrics.get('body_alignment', 'N/A')} | "
+                f"HIP: {metrics.get('hip_status', 'N/A')}"
+            ),
             (20, h - 20),
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
@@ -155,7 +158,7 @@ class VideoProcessorClass(VideoProcessorBase):
 
         cv2.putText(
             img,
-            f"SWING: {metrics['swing_status']}",
+            f"SWING: {metrics.get('swing_status', 'N/A')}",
             (20, h - 20),
             cv2.FONT_HERSHEY_SIMPLEX,
             1,
@@ -166,27 +169,45 @@ class VideoProcessorClass(VideoProcessorBase):
     def _draw_press_overlays(self, img, metrics):
         h, _ = img.shape[:2]
 
+        extension = metrics.get("extension_status", "N/A")
+        symmetry = metrics.get("symmetry_status", "N/A")
+
         cv2.putText(
             img,
-            f"EXT: {metrics['extension_status']} | BACK: {metrics['back_arch_status']}",
-            (20, h - 20),
+            f"EXTENSION: {extension}",
+            (20, h - 70),
             cv2.FONT_HERSHEY_SIMPLEX,
-            1,
+            0.8,
             (0, 255, 0),
             2,
+            cv2.LINE_AA,
+        )
+
+        cv2.putText(
+            img,
+            f"SYMMETRY: {symmetry}",
+            (20, h - 25),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            (0, 255, 0),
+            2,
+            cv2.LINE_AA,
         )
 
     def _draw_lunge_overlays(self, img, metrics):
         h, _ = img.shape[:2]
 
+      
+
         cv2.putText(
             img,
-            f"BALANCE: {metrics['balance_status']}",
-            (20, h - 20),
+            f"TORSO: {metrics.get('torso_stability', 'N/A')}",
+            (20, h - 25),
             cv2.FONT_HERSHEY_SIMPLEX,
-            1,
+            0.8,
             (0, 255, 0),
             2,
+            cv2.LINE_AA,
         )
 
     def recv(self, frame):

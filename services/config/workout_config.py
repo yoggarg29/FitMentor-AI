@@ -23,15 +23,17 @@ METRICS_FIELDS = {
         "knee_angle": 0,
         "back_angle": 0,
         "depth_status": "N/A",
+        "movement": "STABLE",
     },
 
     "Push-ups": {
         "elbow_angle": 0,
         "body_alignment": "N/A",
         "hip_status": "N/A",
+        "movement": "STABLE",
     },
 
-    "Bicep Curls (Dumbbell)": {
+    "Biceps Curls (Dumbbell)": {
         "elbow_angle": 0,
         "shoulder_status": "N/A",
         "swing_status": "N/A",
@@ -40,14 +42,17 @@ METRICS_FIELDS = {
     "Shoulder Press": {
         "elbow_angle": 0,
         "extension_status": "N/A",
-        "back_arch_status": "N/A",
+        "symmetry_status": "N/A",
+        "movement": "STABLE",
     },
 
     "Lunges": {
-        "front_knee_angle": 0,
-        "torso_angle": 0,
-        "balance_status": "N/A",
-    },
+    "front_knee_angle": 0,
+    "torso_angle": 0,
+    "torso_stability": "N/A",
+    "movement": "STABLE",
+    "active_leg": "NONE",
+},
 }
 
 PROMPT = (

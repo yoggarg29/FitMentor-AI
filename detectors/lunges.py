@@ -4,24 +4,29 @@ from core.base_exercise import BaseExercise
 class LungesDetector(BaseExercise):
     DOWN_THRESHOLD = 100
     UP_THRESHOLD = 160
+    LEG_SELECTION_THRESHOLD = 145
+
     MIN_VISIBILITY = 0.7
-    BALANCE_TOLERANCE = 0.10
+    TORSO_LEAN_TOLERANCE = 0.10
 
     LEFT_HIP = 23
     LEFT_KNEE = 25
     LEFT_ANKLE = 27
+
     RIGHT_HIP = 24
     RIGHT_KNEE = 26
     RIGHT_ANKLE = 28
+
     LEFT_SHOULDER = 11
     RIGHT_SHOULDER = 12
 
     def __init__(self):
         super().__init__()
+        self.active_leg = None
 
     def reset(self) -> None:
-        self.reps = 0
-        self.stage = None
+        self.reset_tracking()
+        self.active_leg = None
 
     def process(self, landmarks) -> dict:
         left_knee_angle = self.calculate_angle(
@@ -36,48 +41,181 @@ class LungesDetector(BaseExercise):
             self.get_point(landmarks, self.RIGHT_ANKLE),
         )
 
-        if left_knee_angle <= right_knee_angle:
+        left_visible = (
+            landmarks[self.LEFT_HIP].visibility >= self.MIN_VISIBILITY
+            and landmarks[self.LEFT_KNEE].visibility >= self.MIN_VISIBILITY
+            and landmarks[self.LEFT_ANKLE].visibility >= self.MIN_VISIBILITY
+        )
+
+        right_visible = (
+            landmarks[self.RIGHT_HIP].visibility >= self.MIN_VISIBILITY
+            and landmarks[self.RIGHT_KNEE].visibility >= self.MIN_VISIBILITY
+            and landmarks[self.RIGHT_ANKLE].visibility >= self.MIN_VISIBILITY
+        )
+
+        if self.active_leg is None:
+            if (
+                left_visible
+                and left_knee_angle <= self.LEG_SELECTION_THRESHOLD
+                and (
+                    not right_visible
+                    or left_knee_angle < right_knee_angle
+                )
+            ):
+                self.active_leg = "LEFT"
+                self.angle_history.clear()
+                self.previous_angle = None
+
+            elif (
+                right_visible
+                and right_knee_angle <= self.LEG_SELECTION_THRESHOLD
+                and (
+                    not left_visible
+                    or right_knee_angle < left_knee_angle
+                )
+            ):
+                self.active_leg = "RIGHT"
+                self.angle_history.clear()
+                self.previous_angle = None
+
+        if self.active_leg == "LEFT":
             front_knee_angle = left_knee_angle
+
             front_hip_idx = self.LEFT_HIP
             front_knee_idx = self.LEFT_KNEE
             front_ankle_idx = self.LEFT_ANKLE
             shoulder_idx_for_torso = self.LEFT_SHOULDER
-        else:
+
+            key_landmarks_visible = left_visible
+
+        elif self.active_leg == "RIGHT":
             front_knee_angle = right_knee_angle
+
             front_hip_idx = self.RIGHT_HIP
             front_knee_idx = self.RIGHT_KNEE
             front_ankle_idx = self.RIGHT_ANKLE
             shoulder_idx_for_torso = self.RIGHT_SHOULDER
 
-        key_landmarks_visible = landmarks[front_hip_idx].visibility > self.MIN_VISIBILITY and landmarks[front_knee_idx].visibility > self.MIN_VISIBILITY and landmarks[front_ankle_idx].visibility > self.MIN_VISIBILITY
+            key_landmarks_visible = right_visible
+
+        else:
+            front_knee_angle = min(
+                left_knee_angle,
+                right_knee_angle,
+            )
+
+            torso_angle = 0
+            torso_stability = "READY"
+
+            self.movement = "STABLE"
+
+            return {
+                "reps": self.reps,
+                "front_knee_angle": int(front_knee_angle),
+                "torso_angle": torso_angle,
+                "torso_stability": torso_stability,
+                "movement": self.movement,
+                "active_leg": "NONE",
+            }
+
+        front_knee_angle = self.smooth_angle(
+            front_knee_angle
+        )
+
+        self.update_movement(front_knee_angle)
 
         if key_landmarks_visible:
-            if front_knee_angle < self.DOWN_THRESHOLD:
+            if front_knee_angle <= self.DOWN_THRESHOLD:
+                self.down_frames += 1
+            else:
+                self.down_frames = 0
+
+            if front_knee_angle >= self.UP_THRESHOLD:
+                self.up_frames += 1
+            else:
+                self.up_frames = 0
+
+            if (
+                self.down_frames >= self.MIN_CONFIRM_FRAMES
+                and self.stage != "down"
+            ):
                 self.stage = "down"
 
-            if front_knee_angle > self.UP_THRESHOLD and self.stage == "down":
+            if (
+                self.up_frames >= self.MIN_CONFIRM_FRAMES
+                and self.stage == "down"
+            ):
                 self.stage = "up"
                 self.reps += 1
 
+                self.down_frames = 0
+                self.up_frames = 0
+
+                self.active_leg = None
+
+                self.angle_history.clear()
+                self.previous_angle = None
+                self.movement = "STABLE"
+
+        else:
+            self.movement = "STABLE"
+            self.down_frames = 0
+            self.up_frames = 0
+
         torso_angle = self.calculate_angle(
-            self.get_point(landmarks, shoulder_idx_for_torso),
-            self.get_point(landmarks, front_hip_idx),
-            self.get_point(landmarks, front_knee_idx),
+            self.get_point(
+                landmarks,
+                shoulder_idx_for_torso,
+            ),
+            self.get_point(
+                landmarks,
+                front_hip_idx,
+            ),
+            self.get_point(
+                landmarks,
+                front_knee_idx,
+            ),
         )
 
-        shoulder_mid_x = (landmarks[self.LEFT_SHOULDER].x + landmarks[self.RIGHT_SHOULDER].x) / 2
-        hip_mid_x = (landmarks[self.LEFT_HIP].x + landmarks[self.RIGHT_HIP].x) / 2
-        lateral_offset = abs(shoulder_mid_x - hip_mid_x)
+        torso_landmarks_visible = (
+            landmarks[self.LEFT_SHOULDER].visibility
+            >= self.MIN_VISIBILITY
+            and landmarks[self.RIGHT_SHOULDER].visibility
+            >= self.MIN_VISIBILITY
+            and landmarks[self.LEFT_HIP].visibility
+            >= self.MIN_VISIBILITY
+            and landmarks[self.RIGHT_HIP].visibility
+            >= self.MIN_VISIBILITY
+        )
 
-        if lateral_offset <= self.BALANCE_TOLERANCE:
-            balance_status = "BALANCED"
+        if torso_landmarks_visible:
+            shoulder_mid_x = (
+                landmarks[self.LEFT_SHOULDER].x
+                + landmarks[self.RIGHT_SHOULDER].x
+            ) / 2
+
+            hip_mid_x = (
+                landmarks[self.LEFT_HIP].x
+                + landmarks[self.RIGHT_HIP].x
+            ) / 2
+
+            lateral_offset = abs(
+                shoulder_mid_x - hip_mid_x
+            )
+
+            if lateral_offset <= self.TORSO_LEAN_TOLERANCE:
+                torso_stability = "STABLE"
+            else:
+                torso_stability = "LATERAL LEAN"
+
         else:
-            balance_status = "OFF BALANCE"
+            torso_stability = "N/A"
 
         return {
             "reps": self.reps,
             "front_knee_angle": int(front_knee_angle),
             "torso_angle": int(torso_angle),
-            "balance_status": balance_status,
+            "torso_stability": torso_stability,
+            "movement": self.movement,
+            "active_leg": self.active_leg or "NONE",
         }
-    

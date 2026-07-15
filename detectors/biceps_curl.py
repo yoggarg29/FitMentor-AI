@@ -1,40 +1,53 @@
 import math
+
 from core.base_exercise import BaseExercise
 
 
 class BicepsCurlDetector(BaseExercise):
     UP_THRESHOLD = 50
     DOWN_THRESHOLD = 160
+
     MIN_VISIBILITY = 0.7
+
     ELBOW_DRIFT_TOLERANCE = 0.06
-    SWING_THRESHOLD = 15
+    SWING_THRESHOLD = 8
 
     LEFT_SHOULDER = 11
     LEFT_ELBOW = 13
     LEFT_WRIST = 15
+
     RIGHT_SHOULDER = 12
     RIGHT_ELBOW = 14
     RIGHT_WRIST = 16
+
     LEFT_HIP = 23
     RIGHT_HIP = 24
 
     def __init__(self):
         super().__init__()
-        self._shoulder_x_baseline = None
+        self.torso_baseline_angle = None
+        self.tracking_side = None
 
     def reset(self) -> None:
-        self.reps = 0
-        self.stage = None
-        self._shoulder_x_baseline = None
+        self.reset_tracking()
+        self.torso_baseline_angle = None
+        self.tracking_side = None
 
     def process(self, landmarks) -> dict:
         left_vis = landmarks[self.LEFT_ELBOW].visibility
         right_vis = landmarks[self.RIGHT_ELBOW].visibility
 
-        if left_vis >= right_vis:
+        if self.tracking_side is None:
+            if left_vis >= right_vis:
+                self.tracking_side = "LEFT"
+            else:
+                self.tracking_side = "RIGHT"
+
+        if self.tracking_side == "LEFT":
             shoulder_idx = self.LEFT_SHOULDER
             elbow_idx = self.LEFT_ELBOW
             wrist_idx = self.LEFT_WRIST
+
         else:
             shoulder_idx = self.RIGHT_SHOULDER
             elbow_idx = self.RIGHT_ELBOW
@@ -46,18 +59,50 @@ class BicepsCurlDetector(BaseExercise):
             self.get_point(landmarks, wrist_idx),
         )
 
-        key_landmarks_visible = landmarks[shoulder_idx].visibility > self.MIN_VISIBILITY and landmarks[elbow_idx].visibility > self.MIN_VISIBILITY and landmarks[wrist_idx].visibility > self.MIN_VISIBILITY
+        elbow_angle = self.smooth_angle(elbow_angle)
+        self.update_movement(elbow_angle)
+
+        key_landmarks_visible = (
+            landmarks[shoulder_idx].visibility >= self.MIN_VISIBILITY
+            and landmarks[elbow_idx].visibility >= self.MIN_VISIBILITY
+            and landmarks[wrist_idx].visibility >= self.MIN_VISIBILITY
+        )
 
         if key_landmarks_visible:
-            if elbow_angle < self.UP_THRESHOLD:
+            if elbow_angle <= self.UP_THRESHOLD:
+                self.up_frames += 1
+            else:
+                self.up_frames = 0
+
+            if elbow_angle >= self.DOWN_THRESHOLD:
+                self.down_frames += 1
+            else:
+                self.down_frames = 0
+
+            if (
+                self.up_frames >= self.MIN_CONFIRM_FRAMES
+                and self.stage != "up"
+            ):
                 self.stage = "up"
 
-            if elbow_angle > self.DOWN_THRESHOLD and self.stage == "up":
+            if (
+                self.down_frames >= self.MIN_CONFIRM_FRAMES
+                and self.stage == "up"
+            ):
                 self.stage = "down"
                 self.reps += 1
 
+                self.up_frames = 0
+                self.down_frames = 0
+
+        else:
+            self.movement = "STABLE"
+            self.up_frames = 0
+            self.down_frames = 0
+
         shoulder_x = landmarks[shoulder_idx].x
         elbow_x = landmarks[elbow_idx].x
+
         elbow_drift = abs(elbow_x - shoulder_x)
 
         if elbow_drift <= self.ELBOW_DRIFT_TOLERANCE:
@@ -65,29 +110,70 @@ class BicepsCurlDetector(BaseExercise):
         else:
             shoulder_status = "ELBOW DRIFTING"
 
-        shoulder_mid_x = (landmarks[self.LEFT_SHOULDER].x + landmarks[self.RIGHT_SHOULDER].x) / 2
-        shoulder_mid_y = (landmarks[self.LEFT_SHOULDER].y + landmarks[self.RIGHT_SHOULDER].y) / 2
+        shoulder_mid_x = (
+            landmarks[self.LEFT_SHOULDER].x
+            + landmarks[self.RIGHT_SHOULDER].x
+        ) / 2
 
-        hip_mid_x = (landmarks[self.LEFT_HIP].x + landmarks[self.RIGHT_HIP].x) / 2
-        hip_mid_y = (landmarks[self.LEFT_HIP].y + landmarks[self.RIGHT_HIP].y) / 2
+        shoulder_mid_y = (
+            landmarks[self.LEFT_SHOULDER].y
+            + landmarks[self.RIGHT_SHOULDER].y
+        ) / 2
+
+        hip_mid_x = (
+            landmarks[self.LEFT_HIP].x
+            + landmarks[self.RIGHT_HIP].x
+        ) / 2
+
+        hip_mid_y = (
+            landmarks[self.LEFT_HIP].y
+            + landmarks[self.RIGHT_HIP].y
+        ) / 2
 
         dx = shoulder_mid_x - hip_mid_x
         dy = shoulder_mid_y - hip_mid_y
 
-        torso_angle_from_vertical = self._safe_angle(dx, dy)
+        torso_angle = self._safe_angle(dx, dy)
 
-        if torso_angle_from_vertical <= self.SWING_THRESHOLD:
-            swing_status = "NO SWING"
+        torso_landmarks_visible = (
+            landmarks[self.LEFT_SHOULDER].visibility
+            >= self.MIN_VISIBILITY
+            and landmarks[self.RIGHT_SHOULDER].visibility
+            >= self.MIN_VISIBILITY
+            and landmarks[self.LEFT_HIP].visibility
+            >= self.MIN_VISIBILITY
+            and landmarks[self.RIGHT_HIP].visibility
+            >= self.MIN_VISIBILITY
+        )
+
+        if torso_landmarks_visible:
+            if self.torso_baseline_angle is None:
+                self.torso_baseline_angle = torso_angle
+
+            torso_deviation = abs(
+                torso_angle - self.torso_baseline_angle
+            )
+
+            if torso_deviation > self.SWING_THRESHOLD:
+                swing_status = "SWINGING"
+            else:
+                swing_status = "NO SWING"
+
         else:
-            swing_status = "SWINGING"
+            swing_status = "N/A"
 
         return {
             "reps": self.reps,
             "elbow_angle": int(elbow_angle),
             "shoulder_status": shoulder_status,
             "swing_status": swing_status,
+            "movement": self.movement,
         }
 
     def _safe_angle(self, dx, dy):
-        return math.degrees(math.atan2(abs(dx), abs(dy))) if dy != 0 else 0.0
-    
+        if dy == 0:
+            return 0.0
+
+        return math.degrees(
+            math.atan2(abs(dx), abs(dy))
+        )

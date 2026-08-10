@@ -1,4 +1,5 @@
 from core.base_exercise import BaseExercise
+from core.landmarks import LM
 
 
 class ShoulderPressDetector(BaseExercise):
@@ -11,14 +12,6 @@ class ShoulderPressDetector(BaseExercise):
     MIN_VISIBILITY = 0.7
     ARM_SYMMETRY_TOLERANCE = 15
 
-    LEFT_SHOULDER = 11
-    LEFT_ELBOW = 13
-    LEFT_WRIST = 15
-
-    RIGHT_SHOULDER = 12
-    RIGHT_ELBOW = 14
-    RIGHT_WRIST = 16
-
     def __init__(self):
         super().__init__()
 
@@ -27,24 +20,24 @@ class ShoulderPressDetector(BaseExercise):
 
     def process(self, landmarks) -> dict:
         left_elbow_angle = self.calculate_angle(
-            self.get_point(landmarks, self.LEFT_SHOULDER),
-            self.get_point(landmarks, self.LEFT_ELBOW),
-            self.get_point(landmarks, self.LEFT_WRIST),
+            self.get_point(landmarks, LM.LEFT_SHOULDER),
+            self.get_point(landmarks, LM.LEFT_ELBOW),
+            self.get_point(landmarks, LM.LEFT_WRIST),
         )
 
         right_elbow_angle = self.calculate_angle(
-            self.get_point(landmarks, self.RIGHT_SHOULDER),
-            self.get_point(landmarks, self.RIGHT_ELBOW),
-            self.get_point(landmarks, self.RIGHT_WRIST),
+            self.get_point(landmarks, LM.RIGHT_SHOULDER),
+            self.get_point(landmarks, LM.RIGHT_ELBOW),
+            self.get_point(landmarks, LM.RIGHT_WRIST),
         )
 
         key_landmarks_visible = (
-            landmarks[self.LEFT_SHOULDER].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.LEFT_ELBOW].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.LEFT_WRIST].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_SHOULDER].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_ELBOW].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_WRIST].visibility >= self.MIN_VISIBILITY
+            landmarks[LM.LEFT_SHOULDER].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.LEFT_ELBOW].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.LEFT_WRIST].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.RIGHT_SHOULDER].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.RIGHT_ELBOW].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.RIGHT_WRIST].visibility >= self.MIN_VISIBILITY
         )
 
         if key_landmarks_visible:
@@ -99,6 +92,7 @@ class ShoulderPressDetector(BaseExercise):
 
         else:
             symmetry_status = "UNEVEN PRESS"
+
         if elbow_angle >= self.FULL_EXTENSION_THRESHOLD:
             extension_status = "FULL EXTENSION"
 

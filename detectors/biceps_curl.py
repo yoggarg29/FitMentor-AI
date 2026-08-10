@@ -1,6 +1,7 @@
 import math
 
 from core.base_exercise import BaseExercise
+from core.landmarks import LM
 
 
 class BicepsCurlDetector(BaseExercise):
@@ -11,17 +12,6 @@ class BicepsCurlDetector(BaseExercise):
 
     ELBOW_DRIFT_TOLERANCE = 0.06
     SWING_THRESHOLD = 8
-
-    LEFT_SHOULDER = 11
-    LEFT_ELBOW = 13
-    LEFT_WRIST = 15
-
-    RIGHT_SHOULDER = 12
-    RIGHT_ELBOW = 14
-    RIGHT_WRIST = 16
-
-    LEFT_HIP = 23
-    RIGHT_HIP = 24
 
     def __init__(self):
         super().__init__()
@@ -34,8 +24,8 @@ class BicepsCurlDetector(BaseExercise):
         self.tracking_side = None
 
     def process(self, landmarks) -> dict:
-        left_vis = landmarks[self.LEFT_ELBOW].visibility
-        right_vis = landmarks[self.RIGHT_ELBOW].visibility
+        left_vis = landmarks[LM.LEFT_ELBOW].visibility
+        right_vis = landmarks[LM.RIGHT_ELBOW].visibility
 
         if self.tracking_side is None:
             if left_vis >= right_vis:
@@ -44,14 +34,14 @@ class BicepsCurlDetector(BaseExercise):
                 self.tracking_side = "RIGHT"
 
         if self.tracking_side == "LEFT":
-            shoulder_idx = self.LEFT_SHOULDER
-            elbow_idx = self.LEFT_ELBOW
-            wrist_idx = self.LEFT_WRIST
+            shoulder_idx = LM.LEFT_SHOULDER
+            elbow_idx = LM.LEFT_ELBOW
+            wrist_idx = LM.LEFT_WRIST
 
         else:
-            shoulder_idx = self.RIGHT_SHOULDER
-            elbow_idx = self.RIGHT_ELBOW
-            wrist_idx = self.RIGHT_WRIST
+            shoulder_idx = LM.RIGHT_SHOULDER
+            elbow_idx = LM.RIGHT_ELBOW
+            wrist_idx = LM.RIGHT_WRIST
 
         elbow_angle = self.calculate_angle(
             self.get_point(landmarks, shoulder_idx),
@@ -111,23 +101,23 @@ class BicepsCurlDetector(BaseExercise):
             shoulder_status = "ELBOW DRIFTING"
 
         shoulder_mid_x = (
-            landmarks[self.LEFT_SHOULDER].x
-            + landmarks[self.RIGHT_SHOULDER].x
+            landmarks[LM.LEFT_SHOULDER].x
+            + landmarks[LM.RIGHT_SHOULDER].x
         ) / 2
 
         shoulder_mid_y = (
-            landmarks[self.LEFT_SHOULDER].y
-            + landmarks[self.RIGHT_SHOULDER].y
+            landmarks[LM.LEFT_SHOULDER].y
+            + landmarks[LM.RIGHT_SHOULDER].y
         ) / 2
 
         hip_mid_x = (
-            landmarks[self.LEFT_HIP].x
-            + landmarks[self.RIGHT_HIP].x
+            landmarks[LM.LEFT_HIP].x
+            + landmarks[LM.RIGHT_HIP].x
         ) / 2
 
         hip_mid_y = (
-            landmarks[self.LEFT_HIP].y
-            + landmarks[self.RIGHT_HIP].y
+            landmarks[LM.LEFT_HIP].y
+            + landmarks[LM.RIGHT_HIP].y
         ) / 2
 
         dx = shoulder_mid_x - hip_mid_x
@@ -136,13 +126,13 @@ class BicepsCurlDetector(BaseExercise):
         torso_angle = self._safe_angle(dx, dy)
 
         torso_landmarks_visible = (
-            landmarks[self.LEFT_SHOULDER].visibility
+            landmarks[LM.LEFT_SHOULDER].visibility
             >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_SHOULDER].visibility
+            and landmarks[LM.RIGHT_SHOULDER].visibility
             >= self.MIN_VISIBILITY
-            and landmarks[self.LEFT_HIP].visibility
+            and landmarks[LM.LEFT_HIP].visibility
             >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_HIP].visibility
+            and landmarks[LM.RIGHT_HIP].visibility
             >= self.MIN_VISIBILITY
         )
 

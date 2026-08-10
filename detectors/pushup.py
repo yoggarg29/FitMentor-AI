@@ -1,4 +1,5 @@
 from core.base_exercise import BaseExercise
+from core.landmarks import LM
 
 
 class PushUpDetector(BaseExercise):
@@ -12,20 +13,6 @@ class PushUpDetector(BaseExercise):
     BODY_STRAIGHT = 160
     BODY_SLIGHT_BEND = 140
 
-    LEFT_SHOULDER = 11
-    LEFT_ELBOW = 13
-    LEFT_WRIST = 15
-
-    RIGHT_SHOULDER = 12
-    RIGHT_ELBOW = 14
-    RIGHT_WRIST = 16
-
-    LEFT_HIP = 23
-    RIGHT_HIP = 24
-
-    LEFT_ANKLE = 27
-    RIGHT_ANKLE = 28
-
     def __init__(self):
         super().__init__()
 
@@ -33,21 +20,21 @@ class PushUpDetector(BaseExercise):
         self.reset_tracking()
 
     def process(self, landmarks) -> dict:
-        left_vis = landmarks[self.LEFT_ELBOW].visibility
-        right_vis = landmarks[self.RIGHT_ELBOW].visibility
+        left_vis = landmarks[LM.LEFT_ELBOW].visibility
+        right_vis = landmarks[LM.RIGHT_ELBOW].visibility
 
         if left_vis >= right_vis:
-            shoulder_idx = self.LEFT_SHOULDER
-            elbow_idx = self.LEFT_ELBOW
-            wrist_idx = self.LEFT_WRIST
-            hip_idx = self.LEFT_HIP
-            ankle_idx = self.LEFT_ANKLE
+            shoulder_idx = LM.LEFT_SHOULDER
+            elbow_idx = LM.LEFT_ELBOW
+            wrist_idx = LM.LEFT_WRIST
+            hip_idx = LM.LEFT_HIP
+            ankle_idx = LM.LEFT_ANKLE
         else:
-            shoulder_idx = self.RIGHT_SHOULDER
-            elbow_idx = self.RIGHT_ELBOW
-            wrist_idx = self.RIGHT_WRIST
-            hip_idx = self.RIGHT_HIP
-            ankle_idx = self.RIGHT_ANKLE
+            shoulder_idx = LM.RIGHT_SHOULDER
+            elbow_idx = LM.RIGHT_ELBOW
+            wrist_idx = LM.RIGHT_WRIST
+            hip_idx = LM.RIGHT_HIP
+            ankle_idx = LM.RIGHT_ANKLE
 
         # Elbow angle
         elbow_angle = self.calculate_angle(

@@ -1,4 +1,5 @@
 from core.base_exercise import BaseExercise
+from core.landmarks import LM
 
 
 class LungesDetector(BaseExercise):
@@ -8,17 +9,6 @@ class LungesDetector(BaseExercise):
 
     MIN_VISIBILITY = 0.7
     TORSO_LEAN_TOLERANCE = 0.10
-
-    LEFT_HIP = 23
-    LEFT_KNEE = 25
-    LEFT_ANKLE = 27
-
-    RIGHT_HIP = 24
-    RIGHT_KNEE = 26
-    RIGHT_ANKLE = 28
-
-    LEFT_SHOULDER = 11
-    RIGHT_SHOULDER = 12
 
     def __init__(self):
         super().__init__()
@@ -30,27 +20,27 @@ class LungesDetector(BaseExercise):
 
     def process(self, landmarks) -> dict:
         left_knee_angle = self.calculate_angle(
-            self.get_point(landmarks, self.LEFT_HIP),
-            self.get_point(landmarks, self.LEFT_KNEE),
-            self.get_point(landmarks, self.LEFT_ANKLE),
+            self.get_point(landmarks, LM.LEFT_HIP),
+            self.get_point(landmarks, LM.LEFT_KNEE),
+            self.get_point(landmarks, LM.LEFT_ANKLE),
         )
 
         right_knee_angle = self.calculate_angle(
-            self.get_point(landmarks, self.RIGHT_HIP),
-            self.get_point(landmarks, self.RIGHT_KNEE),
-            self.get_point(landmarks, self.RIGHT_ANKLE),
+            self.get_point(landmarks, LM.RIGHT_HIP),
+            self.get_point(landmarks, LM.RIGHT_KNEE),
+            self.get_point(landmarks, LM.RIGHT_ANKLE),
         )
 
         left_visible = (
-            landmarks[self.LEFT_HIP].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.LEFT_KNEE].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.LEFT_ANKLE].visibility >= self.MIN_VISIBILITY
+            landmarks[LM.LEFT_HIP].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.LEFT_KNEE].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.LEFT_ANKLE].visibility >= self.MIN_VISIBILITY
         )
 
         right_visible = (
-            landmarks[self.RIGHT_HIP].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_KNEE].visibility >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_ANKLE].visibility >= self.MIN_VISIBILITY
+            landmarks[LM.RIGHT_HIP].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.RIGHT_KNEE].visibility >= self.MIN_VISIBILITY
+            and landmarks[LM.RIGHT_ANKLE].visibility >= self.MIN_VISIBILITY
         )
 
         if self.active_leg is None:
@@ -81,20 +71,20 @@ class LungesDetector(BaseExercise):
         if self.active_leg == "LEFT":
             front_knee_angle = left_knee_angle
 
-            front_hip_idx = self.LEFT_HIP
-            front_knee_idx = self.LEFT_KNEE
-            front_ankle_idx = self.LEFT_ANKLE
-            shoulder_idx_for_torso = self.LEFT_SHOULDER
+            front_hip_idx = LM.LEFT_HIP
+            front_knee_idx = LM.LEFT_KNEE
+            front_ankle_idx = LM.LEFT_ANKLE
+            shoulder_idx_for_torso = LM.LEFT_SHOULDER
 
             key_landmarks_visible = left_visible
 
         elif self.active_leg == "RIGHT":
             front_knee_angle = right_knee_angle
 
-            front_hip_idx = self.RIGHT_HIP
-            front_knee_idx = self.RIGHT_KNEE
-            front_ankle_idx = self.RIGHT_ANKLE
-            shoulder_idx_for_torso = self.RIGHT_SHOULDER
+            front_hip_idx = LM.RIGHT_HIP
+            front_knee_idx = LM.RIGHT_KNEE
+            front_ankle_idx = LM.RIGHT_ANKLE
+            shoulder_idx_for_torso = LM.RIGHT_SHOULDER
 
             key_landmarks_visible = right_visible
 
@@ -178,25 +168,25 @@ class LungesDetector(BaseExercise):
         )
 
         torso_landmarks_visible = (
-            landmarks[self.LEFT_SHOULDER].visibility
+            landmarks[LM.LEFT_SHOULDER].visibility
             >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_SHOULDER].visibility
+            and landmarks[LM.RIGHT_SHOULDER].visibility
             >= self.MIN_VISIBILITY
-            and landmarks[self.LEFT_HIP].visibility
+            and landmarks[LM.LEFT_HIP].visibility
             >= self.MIN_VISIBILITY
-            and landmarks[self.RIGHT_HIP].visibility
+            and landmarks[LM.RIGHT_HIP].visibility
             >= self.MIN_VISIBILITY
         )
 
         if torso_landmarks_visible:
             shoulder_mid_x = (
-                landmarks[self.LEFT_SHOULDER].x
-                + landmarks[self.RIGHT_SHOULDER].x
+                landmarks[LM.LEFT_SHOULDER].x
+                + landmarks[LM.RIGHT_SHOULDER].x
             ) / 2
 
             hip_mid_x = (
-                landmarks[self.LEFT_HIP].x
-                + landmarks[self.RIGHT_HIP].x
+                landmarks[LM.LEFT_HIP].x
+                + landmarks[LM.RIGHT_HIP].x
             ) / 2
 
             lateral_offset = abs(

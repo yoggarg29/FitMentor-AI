@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitMentor AI — Your Personal AI Gym Coach</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      @font-face {
+        font-family: "Averta";
+        src: url("fonts/Averta.woff2") format("woff2");
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&family=Instrument+Serif:ital,wght@0,400;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- GRID OVERLAY -->
+    <div class="grid-overlay" aria-hidden="true"></div>
+
+    <!-- NAV -->
+    <nav class="nav">
+      <div class="nav-logo">
+        <span class="logo-bracket">(</span>FITMENTOR AI<span
+          class="logo-bracket"
+          >)</span
+        >
+      </div>
+      <div class="nav-links">
+        <a href="#visuals">Gallery</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#demo">Demo</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-tag">
+        <span class="dot"></span>
+        <span>AI-POWERED · REAL-TIME · PERSONAL FITNESS COACH</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span class="line-one">REAL-TIME</span>
+        <span class="line-two">FITMENTOR<br />AI COACH</span>
+      </h1>
+
+      <p class="hero-sub">
+        Train smarter with real-time pose detection, repetition tracking, and exercise feedback.<br />
+        Your camera becomes a guide to help you pay closer attention to your workout form.
+      </p>
+
+      <div class="hero-cta-row">
+        <a
+          href="https://fitmentor-ai.streamlit.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-primary"
+          id="cta-button"
+        >
+          <span>Launch FitMentor</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M3 8H13M13 8L9 4M13 8L9 12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+        <a href="#demo-video" class="btn-ghost">WATCH DEMO ↓</a>
+      </div>
+
+      <!-- Core capabilities, not unverified performance claims -->
+      <div class="metrics-strip">
+        <div class="metric">
+          <span class="metric-val">Pose</span>
+          <span class="metric-label">Body Landmark Detection</span>
+        </div>
+        <div class="metric-divider"></div>
+        <div class="metric">
+          <span class="metric-val">Reps</span>
+          <span class="metric-label">Exercise Tracking</span>
+        </div>
+        <div class="metric-divider"></div>
+        <div class="metric">
+          <span class="metric-val">Coach</span>
+          <span class="metric-label">Workout Feedback</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISUAL SECTION -->
+    <section class="visuals" id="visuals">
+      <div class="section-header center-header">
+        <span class="section-tag">// GALLERY</span>
+        <h2 class="section-title">Your workout.<br /><em>More informed.</em></h2>
+      </div>
+
+      <div class="card-grid">
+        <!-- Card 1 -->
+        <div class="img-card card-tilt-left card-float-1">
+          <div class="card-inner">
+            <div class="card-img-wrap">
+              <!-- Replace src with your image -->
+              <img
+                src="./IMGs_add_your_own/i1.png"
+                alt="Workout pose detection and form analysis"
+                onerror="this.parentElement.classList.add('img-placeholder')"
+              />
+              <div class="card-scan-line"></div>
+            </div>
+            <div class="card-corner tl"></div>
+            <div class="card-corner tr"></div>
+            <div class="card-corner bl"></div>
+            <div class="card-corner br"></div>
+          </div>
+        </div>
+
+        <!-- Card 2 — tall center -->
+        <div class="img-card card-center card-float-2">
+          <div class="card-inner">
+            <div class="card-img-wrap">
+              <img
+                src="./IMGs_add_your_own/i2.png"
+                alt="FitMentor AI workout form feedback"
+                onerror="this.parentElement.classList.add('img-placeholder')"
+              />
+              <div class="card-scan-line"></div>
+            </div>
+            <div class="card-corner tl"></div>
+            <div class="card-corner tr"></div>
+            <div class="card-corner bl"></div>
+            <div class="card-corner br"></div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="img-card card-tilt-right card-float-3">
+          <div class="card-inner">
+            <div class="card-img-wrap">
+              <img
+                src="./IMGs_add_your_own/i3.png"
+                alt="FitMentor AI exercise analysis"
+                onerror="this.parentElement.classList.add('img-placeholder')"
+              />
+              <div class="card-scan-line"></div>
+            </div>
+            <div class="card-corner tl"></div>
+            <div class="card-corner tr"></div>
+            <div class="card-corner bl"></div>
+            <div class="card-corner br"></div>
+          </div>
+        </div>
+
+        <div class="img-card card-tilt-right card-float-4">
+          <div class="card-inner"> 
+            <div class="card-img-wrap">
+              <img
+                src="./IMGs_add_your_own/i4.png"
+                alt="FitMentor AI exercise analysis"
+                onerror="this.parentElement.classList.add('img-placeholder')"
+              />
+              <div class="card-scan-line"></div>
+            </div>
+            <div class="card-corner tl"></div>
+            <div class="card-corner tr"></div>
+            <div class="card-corner bl"></div>
+            <div class="card-corner br"></div>
+          </div>
+        </div>
+
+        <div class="img-card card-center card-float-5">
+          <div class="card-inner">
+            <div class="card-img-wrap">
+              <img
+                src="./IMGs_add_your_own/i5.png"
+                alt="FitMentor AI exercise analysis"
+                onerror="this.parentElement.classList.add('img-placeholder')"
+              />
+              <div class="card-scan-line"></div>
+            </div>
+            <div class="card-corner tl"></div>
+            <div class="card-corner tr"></div>
+            <div class="card-corner bl"></div>
+            <div class="card-corner br"></div>
+          </div>
+        </div>
+
+        <div class="img-card card-tilt-left card-float-6">
+          <div class="card-inner">
+            <div class="card-img-wrap">
+              <img
+                src="./IMGs_add_your_own/i6.png"
+                alt="FitMentor AI exercise analysis"
+                onerror="this.parentElement.classList.add('img-placeholder')"
+              />
+              <div class="card-scan-line"></div>
+            </div>
+            <div class="card-corner tl"></div>
+            <div class="card-corner tr"></div>
+            <div class="card-corner bl"></div>
+            <div class="card-corner br"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="section-header center-header">
+        <span class="section-tag">// HOW IT WORKS</span>
+        <h2 class="section-title">From camera<br /><em>to coaching</em></h2>
+        <p class="section-desc">
+          FitMentor processes camera frames, identifies body landmarks, and uses
+          exercise-specific rules to track repetitions and surface workout feedback.
+        </p>
+      </div>
+      <div class="steps-grid">
+        <article class="step-card">
+          <span class="step-number">01</span>
+          <h3>Capture</h3>
+          <p>Your browser camera provides frames for the live workout session.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">02</span>
+          <h3>Detect pose</h3>
+          <p>MediaPipe Pose estimates body landmarks from each processed frame.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">03</span>
+          <h3>Track movement</h3>
+          <p>Exercise-specific rules interpret landmark positions and track repetitions.</p>
+        </article>
+        <article class="step-card">
+          <span class="step-number">04</span>
+          <h3>Get feedback</h3>
+          <p>The app presents workout guidance based on the detected exercise state.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- DEMO SECTION -->
+    <section class="demo" id="demo">
+      <div class="section-header center-header">
+        <span class="section-tag">// DEMO</span>
+        <h2 class="section-title">See it in<br /><em>action</em></h2>
+        <p class="section-desc">
+          Explore how pose detection, repetition tracking, and workout feedback fit together. Use a compatible camera and keep your body clearly visible during exercise.
+        </p>
+      </div>
+
+      <div class="video-wrapper" id="demo-video">
+        <div class="video-glow"></div>
+        <div class="video-container">
+          <div class="video-corner tl"></div>
+          <div class="video-corner tr"></div>
+          <div class="video-corner bl"></div>
+          <div class="video-corner br"></div>
+          <div class="video-status">
+            <span class="dot pulse-dot"></span>
+            <span>DEMO</span>
+          </div>
+          <!-- Replace with your video. Options:
+             MP4:    <video src="your-demo.mp4" controls></video>
+             YouTube: <iframe src="https://www.youtube.com/embed/YOUR_ID" ...></iframe>
+        -->
+          <video src="videos_add_your_own/video.mp4" controls playsinline preload="metadata" aria-label="FitMentor AI workout demonstration">Your browser does not support embedded video.</video>
+          <!-- <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" allowfullscreen></iframe> -->
+        </div>
+      </div>
+
+      <!-- feature callouts below video -->
+      <div class="feature-row">
+        <div class="feature">
+          <span class="feature-icon">⬡</span>
+          <strong>Pose Detection</strong>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">⬡</span>
+          <strong>Audio Feedback</strong>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">⬡</span>
+          <strong>Rep Counter</strong>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">⬡</span>
+          <strong>Works in Real-time</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="contact" id="contact">
+      <div class="contact-inner">
+        <span class="section-tag">// ABOUT THE PROJECT</span>
+        <h2 class="contact-title">
+          Meet FitMentor AI.<br /><em>Your workout companion.</em>
+        </h2>
+        <p class="contact-desc">
+          FitMentor AI explores real-time exercise assistance with computer vision. Detection quality can vary with lighting, camera placement, and visibility. It is a fitness aid, not a substitute for a qualified trainer or medical advice.
+        </p>
+
+        <div class="social-grid">
+          <a
+            href="https://www.linkedin.com/in/yog-garg-244969218"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-btn"
+            aria-label="Yog Garg on LinkedIn"
+          >
+            <span class="social-icon" aria-hidden="true">in</span>
+            <span class="social-label">LinkedIn</span>
+          </a>
+
+          <a
+            href="https://www.instagram.com/yog_garg29/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-btn"
+            aria-label="Yog Garg on Instagram"
+          >
+            <span class="social-icon" aria-hidden="true">◎</span>
+            <span class="social-label">Instagram</span>
+          </a>
+
+          <a
+            href="mailto:yoggarg428@gmail.com"
+            class="social-btn"
+            aria-label="Email Yog Garg"
+          >
+            <span class="social-icon" aria-hidden="true">✉</span>
+            <span class="social-label">Email</span>
+          </a>
+
+          <a
+            href="https://github.com/yoggarg29/FitMentor-AI"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-btn"
+            aria-label="FitMentor AI GitHub repository"
+          >
+            <span class="social-icon" aria-hidden="true">⌘</span>
+            <span class="social-label">GitHub</span>
+          </a>
+
+          <a
+            href="https://fitmentor-ai.streamlit.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-btn"
+            aria-label="Launch FitMentor AI"
+          >
+            <span class="social-icon" aria-hidden="true">↗</span>
+            <span class="social-label">Launch App</span>
+          </a>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <span>© 2026 FitMentor AI — Your Personal AI Gym Coach</span>
+      </footer>
+    </section>
+  </body>
+</html>

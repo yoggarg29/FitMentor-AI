@@ -6,9 +6,9 @@ The application uses computer vision to analyze body pose landmarks and exercise
 
 ## 🚀 Live Demo
 
+- **Landing Page:** https://fit-mentor-ai.netlify.app/
 - **Web Application:** https://fitmentor-ai.streamlit.app/
 - **GitHub Repository:** https://github.com/yoggarg29/FitMentor-AI
-- **Landing Page:** Coming soon
 
 ## ✨ Features
 
@@ -62,7 +62,7 @@ FitMentor-AI/
 └── README.md
 ```
 
-*The folder listing above reflects the current project layout; individual files may vary as development continues.*
+*This is a high-level overview of the repository structure.*
 
 ## ⚙️ Run Locally
 
@@ -97,9 +97,11 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 4. Configure secrets
 
-If your configuration requires a Groq API key, add it using the environment or secrets configuration expected by the application. **Never commit API keys or other credentials to GitHub.**
+If the application requires a Groq API key, configure it through the environment or Streamlit secrets mechanism expected by the code.
+
+**Never commit API keys, passwords, or other credentials to GitHub.**
 
 ### 5. Start the application
 
@@ -109,17 +111,22 @@ streamlit run main.py
 
 Open the local URL displayed in your terminal.
 
-## 🌐 Landing Page Deployment
+## 🌐 Deployment
 
-The landing page is a static HTML/CSS website located in `LandingPage/` and can be deployed separately using Netlify.
+### Landing Page — Netlify
 
-Recommended Netlify settings:
+The static landing page is deployed separately on Netlify.
 
-- **Base directory:** `LandingPage`
-- **Build command:** Leave empty
-- **Publish directory:** `.`
+- **Live URL:** https://fit-mentor-ai.netlify.app/
+- **Source directory:** `LandingPage/`
+- **Build command:** None required for the static HTML/CSS site.
+- **Publish directory:** `.` relative to the configured base directory.
 
-The landing page links to the FitMentor AI web application.
+### Web Application — Streamlit
+
+The interactive gym coaching application is hosted separately on Streamlit Community Cloud.
+
+- **Live URL:** https://fitmentor-ai.streamlit.app/
 
 ## 🔮 Future Improvements
 
